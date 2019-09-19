@@ -42,7 +42,7 @@ const useStyles = makeStyles(theme => ({
 
 function App() {
   const classes = useStyles();
-  const [open, setOpen] = React.useState(false);
+  const [open, setOpen] = React.useState(true);
 
   const toggleOpen = () => {
     setOpen(!open);
@@ -77,14 +77,14 @@ function App() {
               Call-Em-All Integration
             </Typography>
           </AppBar>
-         <Container style={{height: '100%'}}>         
-          <div style={{ width: 850, display: 'flex', flexGrow: 1, height: '99%', width: '100%' }}>
+         <Container style={{height: '100%'}}>
+          <div style={{ width: 850, display: 'flex', flexGrow: 1, height: '99%'}}>
             <iframe
               title="CEA SSO test"
-              width="100%"
-              height="100%"
+              width="850px"
+              height="620px"
               scrolling="no"
-              src="https://staging-app.call-em-all.com/conversations"
+              src="http://localhost:3000/conversations"
             />
           </div>
         </Container>
