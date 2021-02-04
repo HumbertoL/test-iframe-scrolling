@@ -4,6 +4,7 @@ import './App.css';
 import Drawer from '@material-ui/core/Drawer';
 import Button from '@material-ui/core/Button';
 import AppBar from '@material-ui/core/AppBar';
+import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import { Container } from '@material-ui/core';
@@ -38,16 +39,33 @@ const useStyles = makeStyles((theme) => ({
   drawerContainer: {
     width: '50%',
   },
+  textInput: {
+    display: 'flex',
+    padding: 24,
+    width: '80%',
+  },
 }));
+
+const defaultURL = 'https://staging-app.call-em-all.com/';
 
 function App() {
   const classes = useStyles();
   const [open, setOpen] = React.useState(true);
+  const [urlInput, setUrlInput] = React.useState(defaultURL);
+
+  const [iframeUrl, setIframeUrl] = React.useState(defaultURL);
 
   const toggleOpen = () => {
     setOpen(!open);
   };
 
+  const handleChange = (event) => {
+    setUrlInput(event.target.value);
+  };
+
+  const handleGo = (event) => {
+    setIframeUrl(urlInput);
+  };
   return (
     <div className={classes.root}>
       <AppBar position="static" className={classes.appBar}>
@@ -77,6 +95,24 @@ function App() {
             Call-Em-All Integration
           </Typography>
         </AppBar>
+        <div className={classes.textInput}>
+          <TextField
+            id="standard-name"
+            fullWidth
+            label="URL"
+            value={urlInput}
+            onChange={handleChange}
+            variant="outlined"
+          />
+          <Button
+            onClick={handleGo}
+            className={classes.button}
+            variant="contained"
+            color="primary"
+          >
+            GO
+          </Button>
+        </div>
         <Container style={{ height: '100%' }}>
           <div
             style={{ width: 850, display: 'flex', flexGrow: 1, height: '99%' }}
@@ -86,7 +122,7 @@ function App() {
               width="850px"
               height="620px"
               scrolling="no"
-              src="https://staging-app.call-em-all.com/"
+              src={iframeUrl}
             />
           </div>
         </Container>
