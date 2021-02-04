@@ -1,14 +1,14 @@
-import React from "react";
-import "./App.css";
+import React from 'react';
+import './App.css';
 
-import Drawer from "@material-ui/core/Drawer";
-import Button from "@material-ui/core/Button";
-import AppBar from "@material-ui/core/AppBar";
-import Typography from "@material-ui/core/Typography";
-import { makeStyles } from "@material-ui/core/styles";
-import { Container } from "@material-ui/core";
+import Drawer from '@material-ui/core/Drawer';
+import Button from '@material-ui/core/Button';
+import AppBar from '@material-ui/core/AppBar';
+import Typography from '@material-ui/core/Typography';
+import { makeStyles } from '@material-ui/core/styles';
+import { Container } from '@material-ui/core';
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   root: {
     flexGrow: 1,
   },
@@ -17,26 +17,26 @@ const useStyles = makeStyles(theme => ({
   },
   appBar: {
     height: 50,
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "flex-start",
-    flexDirection: "row",
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'flex-start',
+    flexDirection: 'row',
     paddingLeft: theme.spacing(2),
     marginBottom: theme.spacing(8),
   },
   drawerAppBar: {
     height: 50,
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "flex-start",
-    flexDirection: "row",
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'flex-start',
+    flexDirection: 'row',
     paddingLeft: theme.spacing(2),
   },
   button: {
     marginLeft: theme.spacing(1),
   },
   drawerContainer: {
-    width: '50%'
+    width: '50%',
   },
 }));
 
@@ -67,24 +67,26 @@ function App() {
         anchor="right"
         open={open}
         classes={{
-          paper: classes.drawerContainer
+          paper: classes.drawerContainer,
         }}
         onClose={toggleOpen}
         width="50%"
       >
-         <AppBar position="static" className={classes.drawerAppBar}>
-            <Typography variant="h6" className={classes.title}>
-              Call-Em-All Integration
-            </Typography>
-          </AppBar>
-         <Container style={{height: '100%'}}>
-          <div style={{ width: 850, display: 'flex', flexGrow: 1, height: '99%'}}>
+        <AppBar position="static" className={classes.drawerAppBar}>
+          <Typography variant="h6" className={classes.title}>
+            Call-Em-All Integration
+          </Typography>
+        </AppBar>
+        <Container style={{ height: '100%' }}>
+          <div
+            style={{ width: 850, display: 'flex', flexGrow: 1, height: '99%' }}
+          >
             <iframe
               title="CEA SSO test"
               width="850px"
               height="620px"
               scrolling="no"
-              src="https://dev-cea-desk-security-a-tpndti.herokuapp.com/"
+              src="https://staging-app.call-em-all.com/"
             />
           </div>
         </Container>
