@@ -120,7 +120,7 @@ function App() {
             <iframe
               title="CEA SSO test"
               width="850px"
-              height="620px"
+              height="4000px"
               scrolling="no"
               src={iframeUrl}
             />
