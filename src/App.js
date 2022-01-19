@@ -115,11 +115,11 @@ function App() {
         </div>
         <Container style={{ height: '100%' }}>
           <div
-            style={{ width: 850, display: 'flex', flexGrow: 1, height: '99%' }}
+            style={{ width: 912, display: 'flex', flexGrow: 1, height: '99%' }}
           >
             <iframe
               title="CEA SSO test"
-              width="850px"
+              width="912px"
               height="4000px"
               scrolling="no"
               src={iframeUrl}
