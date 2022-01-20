@@ -37,7 +37,7 @@ const useStyles = makeStyles((theme) => ({
     marginLeft: theme.spacing(1),
   },
   drawerContainer: {
-    width: '50%',
+    width: '60%',
   },
   textInput: {
     display: 'flex',
@@ -88,7 +88,7 @@ function App() {
           paper: classes.drawerContainer,
         }}
         onClose={toggleOpen}
-        width="50%"
+        width="60%"
       >
         <AppBar position="static" className={classes.drawerAppBar}>
           <Typography variant="h6" className={classes.title}>
