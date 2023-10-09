@@ -46,7 +46,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const defaultURL = 'https://staging-app.call-em-all.com/';
+const defaultURL = 'https://staging-app.call-em-all.com?HideHeader=true';
 
 function App() {
   const classes = useStyles();
