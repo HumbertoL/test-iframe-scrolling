@@ -52,6 +52,34 @@ describe('buildUrl', () => {
   });
 });
 
+describe('join page', () => {
+  const join = (p: Partial<UrlParams>) => url({ routeId: 'join', ...p });
+
+  it('builds the production join link cea-desktop shares', () => {
+    expect(join({ joinHostId: 'prod-join', joinKeyword: 'humberto', joinType: 'promotional' }).url).toBe(
+      'https://www.text-em-all.com/join/humberto/promotional',
+    );
+  });
+
+  it('uses the staging-join prefix and drops HideHeader', () => {
+    expect(join({ joinHostId: 'staging-join', joinKeyword: '60160.CYPRESS', joinType: '', hideHeader: 'canonical' }).url).toBe(
+      'https://www.text-em-all.com/staging-join/60160.CYPRESS',
+    );
+  });
+
+  it('flags keywords the proxy would reject', () => {
+    expect(join({ joinKeyword: 'bad-keyword' }).problems[0]).toMatch(/letters, digits/);
+  });
+
+  it('lets http parents frame HubSpot but not the forms server', () => {
+    const env = { harnessOrigin: 'http://localhost:5180', screenHeight: 1080, hasStorageAccessApi: true, cookiesEnabled: true };
+    const hub = { ...DEFAULT_URL, routeId: 'join', joinHostId: 'staging-join' };
+    const forms = { ...hub, joinHostId: 'staging-forms' };
+    expect(diagnose(buildUrl(hub), hub, DEFAULT_CONTAINER, env).some((f) => f.id === 'frame-ancestors')).toBe(false);
+    expect(diagnose(buildUrl(forms), forms, DEFAULT_CONTAINER, env).some((f) => f.id === 'frame-ancestors')).toBe(true);
+  });
+});
+
 describe('siteOf', () => {
   it('ignores subdomains and ports but not the scheme', () => {
     expect(siteOf('https://staging-app.call-em-all.com')).toBe('https://call-em-all.com');

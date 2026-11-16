@@ -15,9 +15,12 @@ import {
   INCLUDE_ACTIONS,
   ROUTES,
   SSO_KINDS,
+  isJoinRoute,
   routeById,
   type IncludeAction,
 } from '../../data/routes';
+import { JOIN_HOSTS, JOIN_TEST_KEYWORDS, JOIN_TYPES, joinHostById } from '../../data/join';
+import Tooltip from '@mui/material/Tooltip';
 import { useLab } from '../../state/store';
 import { useBuiltUrl } from '../../lib/useBuiltUrl';
 import { CANDIDATES } from '../stage/HostShell';
@@ -32,37 +35,13 @@ export default function UrlPanel() {
   const route = routeById(p.routeId);
   const has = (f: string) => route.fields.includes(f as never);
   const built = useBuiltUrl();
+  const join = isJoinRoute(p.routeId);
 
   return (
     <>
       <Section title="Where">
-        <TextField select label="Environment" value={p.envId} onChange={(e) => set({ envId: e.target.value })}>
-          {ENVIRONMENTS.map((env) => (
-            <MenuItem key={env.id} value={env.id}>
-              <Stack direction="row" sx={{ alignItems: 'center', gap: 1, width: '100%' }}>
-                <Box sx={{ width: 8, height: 8, borderRadius: '50%', bgcolor: TIER_COLOR[env.tier] }} />
-                <Box sx={{ flex: 1 }}>{env.label}</Box>
-                <Typography sx={{ fontFamily: MONO, fontSize: 11, color: 'text.secondary' }}>
-                  {env.origin.replace(/^https?:\/\//, '')}
-                </Typography>
-              </Stack>
-            </MenuItem>
-          ))}
-          <MenuItem value={CUSTOM_ENV_ID}>Custom origin…</MenuItem>
-        </TextField>
-        {p.envId === CUSTOM_ENV_ID && (
-          <TextField
-            label="Origin"
-            value={p.customOrigin}
-            onChange={(e) => set({ customOrigin: e.target.value })}
-            slotProps={{ htmlInput: { style: { fontFamily: MONO } } }}
-          />
-        )}
-        {ENVIRONMENTS.find((e) => e.id === p.envId)?.note && (
-          <Hint>{ENVIRONMENTS.find((e) => e.id === p.envId)?.note}</Hint>
-        )}
         <TextField select label="View" value={p.routeId} onChange={(e) => set({ routeId: e.target.value })}>
-          {(['Conversations', 'Broadcasts', 'Auth', 'Other'] as const).flatMap((g) => [
+          {(['Conversations', 'Broadcasts', 'Auth', 'Public pages', 'Other'] as const).flatMap((g) => [
             <ListSubheader key={g}>{g}</ListSubheader>,
             ...ROUTES.filter((r) => r.group === g).map((r) => (
               <MenuItem key={r.id} value={r.id}>
@@ -72,7 +51,117 @@ export default function UrlPanel() {
           ])}
         </TextField>
         <Hint>{route.description}</Hint>
+        {join ? (
+          <>
+            <TextField select label="Join page host" value={p.joinHostId} onChange={(e) => set({ joinHostId: e.target.value })}>
+              {JOIN_HOSTS.map((h) => (
+                <MenuItem key={h.id} value={h.id}>
+                  <Stack direction="row" sx={{ alignItems: 'center', gap: 1, width: '100%' }}>
+                    <Box sx={{ width: 8, height: 8, borderRadius: '50%', bgcolor: TIER_COLOR[h.tier] }} />
+                    <Box sx={{ flex: 1 }}>{h.label}</Box>
+                    <Typography sx={{ fontFamily: MONO, fontSize: 11, color: 'text.secondary' }}>
+                      {h.origin.replace(/^https?:\/\//, '')}/{h.prefix}
+                    </Typography>
+                  </Stack>
+                </MenuItem>
+              ))}
+            </TextField>
+            <Hint>{joinHostById(p.joinHostId).note}</Hint>
+          </>
+        ) : (
+          <>
+            <TextField select label="Environment" value={p.envId} onChange={(e) => set({ envId: e.target.value })}>
+              {ENVIRONMENTS.map((env) => (
+                <MenuItem key={env.id} value={env.id}>
+                  <Stack direction="row" sx={{ alignItems: 'center', gap: 1, width: '100%' }}>
+                    <Box sx={{ width: 8, height: 8, borderRadius: '50%', bgcolor: TIER_COLOR[env.tier] }} />
+                    <Box sx={{ flex: 1 }}>{env.label}</Box>
+                    <Typography sx={{ fontFamily: MONO, fontSize: 11, color: 'text.secondary' }}>
+                      {env.origin.replace(/^https?:\/\//, '')}
+                    </Typography>
+                  </Stack>
+                </MenuItem>
+              ))}
+              <MenuItem value={CUSTOM_ENV_ID}>Custom origin…</MenuItem>
+            </TextField>
+            {p.envId === CUSTOM_ENV_ID && (
+              <TextField
+                label="Origin"
+                value={p.customOrigin}
+                onChange={(e) => set({ customOrigin: e.target.value })}
+                slotProps={{ htmlInput: { style: { fontFamily: MONO } } }}
+              />
+            )}
+            {ENVIRONMENTS.find((e) => e.id === p.envId)?.note && (
+              <Hint>{ENVIRONMENTS.find((e) => e.id === p.envId)?.note}</Hint>
+            )}
+          </>
+        )}
       </Section>
+
+      {join && (
+        <Section title="Join form">
+          <Stack sx={{ gap: 0.75 }}>
+            <TextField
+              label="Account keyword"
+              value={p.joinKeyword}
+              onChange={(e) => set({ joinKeyword: e.target.value.trim() })}
+              helperText="The account’s SMS keyword (often the AccountID). Add .group for a group’s join keyword."
+              slotProps={{ htmlInput: { style: { fontFamily: MONO } } }}
+            />
+            <Stack direction="row" sx={{ gap: 0.5, flexWrap: 'wrap' }}>
+              {JOIN_TEST_KEYWORDS.map((k) => (
+                <Tooltip key={k.keyword} title={`Staging: ${k.note}`}>
+                  <Box
+                    component="button"
+                    onClick={() => set({ joinKeyword: k.keyword })}
+                    sx={{
+                      all: 'unset',
+                      cursor: 'pointer',
+                      fontFamily: MONO,
+                      fontSize: 11,
+                      px: 0.75,
+                      py: 0.25,
+                      borderRadius: 1,
+                      border: 1,
+                      borderColor: p.joinKeyword === k.keyword ? 'primary.main' : 'divider',
+                      color: p.joinKeyword === k.keyword ? 'primary.main' : 'text.secondary',
+                      '&:hover': { color: 'primary.main', borderColor: 'primary.main' },
+                    }}
+                  >
+                    {k.keyword}
+                  </Box>
+                </Tooltip>
+              ))}
+            </Stack>
+          </Stack>
+          <ToggleButtonGroup
+            size="small"
+            exclusive
+            fullWidth
+            value={JOIN_TYPES.some((t) => t.id === p.joinType) ? p.joinType : null}
+            onChange={(_, v) => v !== null && set({ joinType: v })}
+          >
+            {JOIN_TYPES.map((t) => (
+              <ToggleButton key={t.id || 'none'} value={t.id}>
+                {t.label}
+              </ToggleButton>
+            ))}
+          </ToggleButtonGroup>
+          <Hint>
+            Only changes the consent sentence: “you agree to receive{' '}
+            <b>{(JOIN_TYPES.find((t) => t.id === p.joinType) ?? JOIN_TYPES[0]).wording}</b> from …”. cea-desktop
+            always shares the promotional link.
+          </Hint>
+          <TextField
+            label="Type segment (raw)"
+            value={p.joinType}
+            onChange={(e) => set({ joinType: e.target.value.trim() })}
+            helperText="Try something unknown: it should fall back to informational."
+            slotProps={{ htmlInput: { style: { fontFamily: MONO } } }}
+          />
+        </Section>
+      )}
 
       {(has('conversationId') || has('phoneNumber') || has('textNumberId') || has('customPath') || has('sso')) && (
         <Section title="Inputs">
@@ -257,7 +346,8 @@ export default function UrlPanel() {
         </Section>
       )}
 
-      <Section title="App flags">
+      <Section title={join ? 'Query' : 'App flags'}>
+        {!join && (
         <TextField
           select
           label="HideHeader"
@@ -277,10 +367,7 @@ export default function UrlPanel() {
             </MenuItem>
           ))}
         </TextField>
-        <FormControlLabel
-          control={<Switch checked={p.hideMonetization} onChange={(e) => set({ hideMonetization: e.target.checked })} />}
-          label="HideMonetization=true"
-        />
+        )}
         <TextField
           label="Extra query"
           placeholder="foo=bar&baz=1"
@@ -288,6 +375,7 @@ export default function UrlPanel() {
           onChange={(e) => set({ extraQuery: e.target.value })}
           slotProps={{ htmlInput: { style: { fontFamily: MONO } } }}
         />
+        {join && <Hint>The join form reads no query parameters. Anything added here should change nothing.</Hint>}
       </Section>
 
       <Section title="Anatomy">

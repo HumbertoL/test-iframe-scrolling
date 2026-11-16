@@ -27,8 +27,9 @@ yarn build        # → build/ (what Netlify publishes)
   - **Avionté:** Embedded Views, conversation and inbox.
   - **Akken:** `/inbox/X/messages?phonenumber=…`.
   - **TempWorks / Ultra-Staff EDGE:** `TemporaryKey` SSO.
-  - **First-party:** the pop-out, login in a frame, and the mobile webview.
-- **URL builder.** Every environment and every route an integration can land on, plus the flags: `HideHeader` (including the casing and duplicate variants the parser handles), `include`, `phonenumber`, `textnumberid`, inbox filters, `HideMonetization` and SSO tokens.
+  - **Join page:** the public opt-in form (`www.text-em-all.com/join/{keyword}/{type}`, or `/staging-join/…`), embedded on a pretend customer site, in a modal, at phone width, plus the group-keyword, charity and unknown-keyword cases. HubSpot sends no `frame-ancestors`, so even `yarn start:http` can frame it.
+  - **First-party:** the pop-out, login in a frame, and a phone-sized frame.
+- **URL builder.** Every environment and every route an integration can land on, plus the flags: `HideHeader` (including the casing and duplicate variants the parser handles), `include`, `phonenumber`, `textnumberid`, inbox filters and SSO tokens.
   - Tokens are never saved or put in share links.
 - **Containers.** Inline (the page scrolls), slide-over drawer, modal, docked split, multi-width compare, sized popup and new tab.
   - A pretend partner app ("Recruit-Em-All") sits behind them. Its **Text** buttons feed a candidate's phone number into the URL.

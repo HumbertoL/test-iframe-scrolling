@@ -1,3 +1,5 @@
+import { JOIN_BREAKPOINTS } from './join';
+
 /** Width thresholds in cea-desktop (shared/media-queries.ts) that change the layout. */
 export const BREAKPOINTS = [
   { px: 650, label: 'Dialogs full-screen', side: 'below' },
@@ -8,6 +10,10 @@ export const BREAKPOINTS = [
   { px: 1310, label: 'Wide tables', side: 'above' },
   { px: 1600, label: 'Max app width', side: 'above' },
 ] as const;
+
+/** Breakpoints that matter for what is being framed. */
+export const breakpointsFor = (join: boolean): readonly { px: number; label: string; side: string }[] =>
+  join ? JOIN_BREAKPOINTS : BREAKPOINTS;
 
 /** Heights TEA enforces when it detects it is framed. */
 export const HEIGHT_MARKERS = [
@@ -76,11 +82,20 @@ export const KNOWN_ISSUES: KnownIssue[] = [
     source: 'docs: How-Tos/Troubleshoot Webhook Notifications.md:143-145',
   },
   {
-    id: 'hide-monetization',
-    title: 'HideMonetization does nothing',
-    detail: 'The flag is stored in redux but no component reads it.',
-    howToTest: 'Mobile webview preset: credits still show.',
-    source: 'cea-desktop: client/src/state/config/selectors.ts:11-15',
+    id: 'join-type-dropped',
+    title: 'Forms loader drops the join type',
+    detail:
+      'staging-forms.text-em-all.com/join/{keyword}/promotional redirects to the test loader, which keeps only the keyword, so the consent text says "informational".',
+    howToTest: 'Join page → Forms server loader preset.',
+    source: 'www-forms: hubspot/index.html:76-81',
+  },
+  {
+    id: 'join-iframe-css',
+    title: 'HubSpot iframe CSS targets old classes',
+    detail:
+      'When framed, HubSpot adds body.in-iframe. Its .in-iframe .jss4 rule targets MUI v4 class names the form no longer uses, and .c-col-inner { height: 0 !important } collapses the wrapper. The rules live in HubSpot, not in a repo.',
+    howToTest: 'Any embedded join preset: inspect body.in-iframe and check the form is not clipped.',
+    source: 'HubSpot page 13745746577 (join) inline CSS',
   },
   {
     id: 'no-landing-in-frame',

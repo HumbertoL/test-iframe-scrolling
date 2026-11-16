@@ -197,3 +197,66 @@ export function HostRecord({ children }: { children: ReactNode }) {
     </Chrome>
   );
 }
+
+/**
+ * A customer's own website, where the join form gets embedded. With children it
+ * shows the form inline; without, a "Get text updates" button opens the container.
+ */
+export function HostSite({ children }: { children?: ReactNode }) {
+  const accent = useAccent();
+  const setOpen = useLab((s) => s.setOpen);
+  const addLog = useLab((s) => s.addLog);
+  return (
+    <Box
+      sx={{
+        minHeight: '100%',
+        bgcolor: '#fffaf3',
+        color: '#2b2118',
+        borderRadius: 2,
+        overflow: 'hidden',
+        border: '1px solid rgba(43,33,24,.1)',
+        boxShadow: '0 30px 80px -40px rgba(0,0,0,.5)',
+      }}
+    >
+      <Stack
+        direction="row"
+        sx={{ alignItems: 'center', gap: 3, px: 4, height: 64, borderBottom: '1px solid rgba(43,33,24,.08)' }}
+      >
+        <Typography sx={{ fontFamily: 'Georgia, serif', fontSize: 22, fontWeight: 700, flex: 1 }}>
+          Northwind Coffee Co.
+        </Typography>
+        {['Menu', 'Locations', 'Catering', 'Text club'].map((t) => (
+          <Typography key={t} sx={{ fontSize: 13, fontWeight: 600, color: t === 'Text club' ? accent : '#7a6a5a' }}>
+            {t}
+          </Typography>
+        ))}
+      </Stack>
+      <Box sx={{ px: 4, py: 5, background: 'linear-gradient(180deg, #f3e6d3, #fffaf3)' }}>
+        <Typography sx={{ fontFamily: 'Georgia, serif', fontSize: 34, fontWeight: 700, letterSpacing: '-0.01em' }}>
+          Join the Text Club ☕
+        </Typography>
+        <Typography sx={{ color: '#7a6a5a', mt: 1, maxWidth: 520 }}>
+          Weekly specials and a free drink on your birthday. Sign up below, reply to confirm, and you’re in.
+        </Typography>
+        {!children && (
+          <Button
+            variant="contained"
+            size="large"
+            startIcon={<SmsRoundedIcon />}
+            onClick={() => {
+              setOpen(true);
+              addLog('info', 'Host site: "Get text updates" clicked');
+            }}
+            sx={{ mt: 3, bgcolor: accent, borderRadius: 99, px: 3, '&:hover': { bgcolor: accent, filter: 'brightness(.92)' } }}
+          >
+            Get text updates
+          </Button>
+        )}
+      </Box>
+      {children && <Box sx={{ px: 4, pb: 4 }}>{children}</Box>}
+      <Box sx={{ px: 4, py: 3, borderTop: '1px solid rgba(43,33,24,.08)', color: '#a3927f', fontSize: 12 }}>
+        © Northwind Coffee Co. · a pretend customer site
+      </Box>
+    </Box>
+  );
+}

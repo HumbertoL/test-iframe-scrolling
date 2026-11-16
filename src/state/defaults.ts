@@ -10,7 +10,6 @@ export const DEFAULT_URL: UrlParams = {
   includeEnabled: true,
   include: ['edit', 'optout'],
   hideHeader: 'canonical',
-  hideMonetization: false,
   inboxTextNumberId: '',
   inboxBroadcastId: '',
   inboxIsDone: false,
@@ -20,6 +19,9 @@ export const DEFAULT_URL: UrlParams = {
   ssoDestinationHome: false,
   ssoHideHeader: true,
   customPath: '/contacts/group/everyone',
+  joinHostId: 'staging-join',
+  joinKeyword: '60160',
+  joinType: 'promotional',
   extraQuery: '',
 };
 

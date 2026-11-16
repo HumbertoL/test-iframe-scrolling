@@ -25,10 +25,17 @@ import { useLab } from '../../state/store';
 import type { ContainerMode } from '../../state/types';
 import { useBuiltUrl } from '../../lib/useBuiltUrl';
 import { armGrowAfterLoad } from '../../lib/frames';
-import { BREAKPOINTS } from '../../data/behaviors';
+import { breakpointsFor } from '../../data/behaviors';
+import { isJoinRoute } from '../../data/routes';
 import { MONO } from '../../theme';
 import EmbedFrame from './EmbedFrame';
-import { HostList, HostRecord } from './HostShell';
+import { HostList, HostRecord, HostSite } from './HostShell';
+
+/** The page behind or around the frame: an ATS for app views, a customer site for the join form. */
+function Backstage({ compact }: { compact?: boolean }) {
+  const join = useLab((s) => isJoinRoute(s.url.routeId));
+  return join ? <HostSite /> : <HostList compact={compact} />;
+}
 
 export const MODES: { id: ContainerMode; label: string; icon: ReactNode; hint: string }[] = [
   { id: 'inline', label: 'Inline', icon: <ViewDayRoundedIcon fontSize="small" />, hint: 'Fixed-size frame in the page. The page scrolls, as with Bullhorn’s 4000px tab' },
@@ -162,9 +169,14 @@ function Canvas() {
 
 function InlineView() {
   const host = useLab((s) => s.container.hostShell);
+  const join = useLab((s) => isJoinRoute(s.url.routeId));
   return (
     <Box sx={{ p: 4, width: 'max-content', minWidth: '100%' }}>
-      {host ? (
+      {host && join ? (
+        <HostSite>
+          <EmbedFrame />
+        </HostSite>
+      ) : host ? (
         <HostRecord>
           <EmbedFrame />
         </HostRecord>
@@ -226,7 +238,7 @@ function DrawerView() {
   return (
     <Box sx={{ position: 'absolute', inset: 0 }}>
       <Box sx={{ position: 'absolute', inset: 0, overflow: 'auto', p: 4 }}>
-        <HostList />
+        <Backstage />
       </Box>
       <Backdrop show={open} onClick={() => setOpen(false)} />
       <Stack
@@ -258,7 +270,7 @@ function ModalView() {
   return (
     <Box sx={{ position: 'absolute', inset: 0 }}>
       <Box sx={{ position: 'absolute', inset: 0, overflow: 'auto', p: 4 }}>
-        <HostList />
+        <Backstage />
       </Box>
       <Backdrop show={open} onClick={() => setOpen(false)} />
       {open && (
@@ -293,7 +305,7 @@ function SplitView() {
   return (
     <Stack direction={c.drawerAnchor === 'right' ? 'row' : 'row-reverse'} sx={{ position: 'absolute', inset: 0 }}>
       <Box sx={{ flex: 1, minWidth: 0, overflow: 'auto', p: 3 }}>
-        <HostList compact />
+        <Backstage compact />
       </Box>
       <Stack
         sx={{
@@ -315,10 +327,11 @@ function SplitView() {
 
 function CompareView() {
   const c = useLab((s) => s.container);
+  const join = useLab((s) => isJoinRoute(s.url.routeId));
   return (
     <Stack direction="row" sx={{ gap: 4, p: 4, width: 'max-content', alignItems: 'flex-start' }}>
       {c.compareWidths.map((w) => {
-        const crossed = BREAKPOINTS.filter((b) => (b.side === 'below' ? w < b.px : w > b.px));
+        const crossed = breakpointsFor(join).filter((b) => (b.side === 'below' ? w < b.px : w > b.px));
         return (
           <Stack key={w} sx={{ gap: 1 }}>
             <Stack direction="row" sx={{ gap: 0.75, alignItems: 'center', flexWrap: 'wrap', maxWidth: w * c.zoom }}>

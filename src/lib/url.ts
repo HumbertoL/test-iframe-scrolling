@@ -1,5 +1,6 @@
 import { CUSTOM_ENV_ID, ENVIRONMENTS } from '../data/environments';
-import { HIDE_HEADER_VARIANTS, routeById } from '../data/routes';
+import { HIDE_HEADER_VARIANTS, isJoinRoute, routeById } from '../data/routes';
+import { JOIN_KEYWORD_PATTERN, joinHostById } from '../data/join';
 import type { UrlParams } from '../state/types';
 
 export interface QueryPart {
@@ -17,7 +18,8 @@ export interface BuiltUrl {
   problems: string[];
 }
 
-export function resolveOrigin(p: Pick<UrlParams, 'envId' | 'customOrigin'>): string {
+export function resolveOrigin(p: Pick<UrlParams, 'envId' | 'customOrigin' | 'routeId' | 'joinHostId'>): string {
+  if (isJoinRoute(p.routeId)) return joinHostById(p.joinHostId).origin;
   if (p.envId === CUSTOM_ENV_ID) return p.customOrigin.replace(/\/+$/, '');
   return (ENVIRONMENTS.find((e) => e.id === p.envId) ?? ENVIRONMENTS[0]).origin;
 }
@@ -84,14 +86,20 @@ export function buildUrl(p: UrlParams): BuiltUrl {
     if (p.inboxAutoOptOut) query.push({ key: 'tag', value: 'auto-opt-out', why: 'Auto opt-out tag' });
   }
 
-  const hh = HIDE_HEADER_VARIANTS.find((v) => v.id === p.hideHeader);
+  if (has('join')) {
+    const kw = p.joinKeyword.trim();
+    if (!kw) problems.push('Needs an account keyword');
+    else if (!JOIN_KEYWORD_PATTERN.test(kw))
+      problems.push('The proxy only accepts letters, digits and _ (plus one .group), so this keyword will be rejected');
+    if (p.joinType && !['promotional', 'charity'].includes(p.joinType))
+      problems.push(`"${p.joinType}" is not a known type; the form falls back to informational wording`);
+  }
+
+  const hh = isJoinRoute(p.routeId) ? undefined : HIDE_HEADER_VARIANTS.find((v) => v.id === p.hideHeader);
   if (hh?.query)
     query.push(
       ...rawPairs(hh.query, hh.expectHidden ? 'Hides the top nav and banners' : 'Should NOT hide the header'),
     );
-
-  if (p.hideMonetization)
-    query.push({ key: 'HideMonetization', value: 'true', why: 'Mobile webview flag (no effect today)' });
 
   if (p.extraQuery.trim()) query.push(...rawPairs(p.extraQuery.trim(), 'Extra'));
 

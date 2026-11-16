@@ -14,7 +14,8 @@ import Tooltip from '@mui/material/Tooltip';
 import Typography from '@mui/material/Typography';
 import { useLab } from '../../state/store';
 import { SANDBOX_TOKENS } from '../../state/defaults';
-import { BREAKPOINTS, HEIGHT_MARKERS, TALL_FRAME_FACTOR } from '../../data/behaviors';
+import { HEIGHT_MARKERS, TALL_FRAME_FACTOR, breakpointsFor } from '../../data/behaviors';
+import { isJoinRoute } from '../../data/routes';
 import { readEnv } from '../../lib/diagnostics';
 import { MONO } from '../../theme';
 import { Hint, Section } from './ui';
@@ -41,6 +42,7 @@ export default function FramePanel() {
   const c = useLab((s) => s.container);
   const set = useLab((s) => s.setContainer);
   const [newWidth, setNewWidth] = useState('');
+  const join = useLab((s) => isJoinRoute(s.url.routeId));
   const panelMode = c.mode === 'drawer' || c.mode === 'split';
 
   return (
@@ -70,8 +72,12 @@ export default function FramePanel() {
         </Stack>
         <Dimension label="Width" value={c.width} min={320} max={1700} onChange={(width) => set({ width })} />
         <Dimension label="Height" value={c.height} min={300} max={5000} onChange={(height) => set({ height })} />
-        <WidthMap width={c.width} />
-        <HeightMap height={c.height} />
+        <WidthMap width={c.width} join={join} />
+        {join ? (
+          <Hint>The join form has no frame caps. It is 700px wide (full width below 768px) with a 330px minimum height, inside HubSpot’s header and footer.</Hint>
+        ) : (
+          <HeightMap height={c.height} />
+        )}
       </Section>
 
       {panelMode && (
@@ -141,7 +147,7 @@ export default function FramePanel() {
         <Stack>
           <FormControlLabel
             control={<Switch checked={c.hostShell} onChange={(e) => set({ hostShell: e.target.checked })} />}
-            label="Show the pretend partner app (Recruit-Em-All)"
+            label="Show the pretend host page (partner app or customer site)"
           />
           <FormControlLabel
             control={<Switch checked={c.showRulers} onChange={(e) => set({ showRulers: e.target.checked })} />}
@@ -242,12 +248,13 @@ function Dimension({
 }
 
 /** Where the frame width sits among cea-desktop’s breakpoints. */
-function WidthMap({ width }: { width: number }) {
+function WidthMap({ width, join }: { width: number; join: boolean }) {
+  const BREAKPOINTS = breakpointsFor(join);
   const MAX = 1700;
   const pct = (px: number) => `${Math.min(100, (px / MAX) * 100)}%`;
   return (
     <Box sx={{ mt: 1 }}>
-      <Typography sx={{ fontSize: 11, color: 'text.secondary', mb: 3.5 }}>Width vs. TEA breakpoints</Typography>
+      <Typography sx={{ fontSize: 11, color: 'text.secondary', mb: 3.5 }}>{join ? 'Width vs. join form breakpoints' : 'Width vs. TEA breakpoints'}</Typography>
       <Box sx={{ position: 'relative', height: 10, borderRadius: 5, bgcolor: (t) => t.alpha(t.vars!.palette.text.primary, 0.08) }}>
         <Box
           sx={{

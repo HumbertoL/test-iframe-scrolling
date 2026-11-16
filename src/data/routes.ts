@@ -1,3 +1,5 @@
+import { joinHostById } from './join';
+
 /** Which inputs a route reads. Drives what the URL builder shows. */
 export type RouteField =
   | 'conversationId'
@@ -6,16 +8,17 @@ export type RouteField =
   | 'include'
   | 'inboxFilters'
   | 'sso'
+  | 'join'
   | 'customPath';
 
 export interface RouteDef {
   id: string;
   label: string;
-  group: 'Conversations' | 'Broadcasts' | 'Auth' | 'Other';
+  group: 'Conversations' | 'Broadcasts' | 'Auth' | 'Public pages' | 'Other';
   description: string;
   fields: RouteField[];
   /** Builds the path (no query) from the current params. */
-  path: (p: { conversationId: string; customPath: string }) => string;
+  path: (p: { conversationId: string; customPath: string; joinKeyword: string; joinType: string; joinHostId: string }) => string;
 }
 
 export const ROUTES: RouteDef[] = [
@@ -99,6 +102,16 @@ export const ROUTES: RouteDef[] = [
     path: () => '/sso.aspx',
   },
   {
+    id: 'join',
+    label: 'Join page (opt-in form)',
+    group: 'Public pages',
+    description:
+      'The public keyword opt-in form customers share and embed on their sites. Served by HubSpot on www.text-em-all.com; it reads only the path.',
+    fields: ['join'],
+    path: ({ joinKeyword, joinType, joinHostId }) =>
+      `/${joinHostById(joinHostId).prefix}/${joinKeyword || ':keyword'}${joinType ? `/${joinType}` : ''}`,
+  },
+  {
     id: 'custom',
     label: 'Custom path',
     group: 'Other',
@@ -107,6 +120,9 @@ export const ROUTES: RouteDef[] = [
     path: ({ customPath }) => (customPath.startsWith('/') ? customPath : `/${customPath}`),
   },
 ];
+
+/** Join page: different host, no TEA app behaviour (no login, no HideHeader, no frame caps). */
+export const isJoinRoute = (id: string) => id === 'join';
 
 export const routeById = (id: string): RouteDef =>
   ROUTES.find((r) => r.id === id) ?? ROUTES[0];

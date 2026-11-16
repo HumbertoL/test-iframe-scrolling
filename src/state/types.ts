@@ -10,7 +10,6 @@ export interface UrlParams {
   includeEnabled: boolean;
   include: IncludeAction[];
   hideHeader: HideHeaderVariant;
-  hideMonetization: boolean;
   inboxTextNumberId: string;
   inboxBroadcastId: string;
   inboxIsDone: boolean;
@@ -20,6 +19,9 @@ export interface UrlParams {
   ssoDestinationHome: boolean;
   ssoHideHeader: boolean;
   customPath: string;
+  joinHostId: string;
+  joinKeyword: string;
+  joinType: string;
   extraQuery: string;
 }
 

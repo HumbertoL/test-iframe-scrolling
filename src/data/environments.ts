@@ -4,6 +4,8 @@ export interface Environment {
   origin: string;
   tier: 'prod' | 'staging' | 'dev' | 'local';
   note?: string;
+  /** cea-desktop is served with CSP `frame-ancestors https:` everywhere but local dev. */
+  frameAncestorsHttpsOnly?: boolean;
 }
 
 /**
@@ -56,6 +58,7 @@ export const ENVIRONMENTS: Environment[] = [
     origin: 'http://localhost:3000',
     tier: 'local',
     note: 'Same site as this harness (ports do not count), so dev cookies (SameSite=Strict) still work.',
+    frameAncestorsHttpsOnly: false,
   },
 ];
 

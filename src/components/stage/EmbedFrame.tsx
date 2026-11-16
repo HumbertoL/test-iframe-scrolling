@@ -7,6 +7,7 @@ import { useBuiltUrl } from '../../lib/useBuiltUrl';
 import { readEnv, tallCapApplies } from '../../lib/diagnostics';
 import { registerFrame, takeGrowAfterLoad } from '../../lib/frames';
 import { HEIGHT_MARKERS } from '../../data/behaviors';
+import { isJoinRoute } from '../../data/routes';
 import { MONO } from '../../theme';
 
 interface Props {
@@ -20,6 +21,7 @@ interface Props {
 export default function EmbedFrame({ label = 'main', width, height, fluid }: Props) {
   const c = useLab((s) => s.container);
   const reloadKey = useLab((s) => s.reloadKey);
+  const join = useLab((s) => isJoinRoute(s.url.routeId));
   const addLog = useLab((s) => s.addLog);
   const setContainer = useLab((s) => s.setContainer);
   const { url } = useBuiltUrl();
@@ -113,7 +115,7 @@ export default function EmbedFrame({ label = 'main', width, height, fluid }: Pro
           style={{ border: 0, display: 'block' }}
         />
         {loading && <LoadingSheen />}
-        {c.showRulers && (
+        {c.showRulers && !join && (
           <Box sx={{ position: 'absolute', inset: 0, pointerEvents: 'none' }}>
             {HEIGHT_MARKERS.filter((m) => m.px < h).map((m) => (
               <Marker
