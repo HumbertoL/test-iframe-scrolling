@@ -1,0 +1,60 @@
+import type { ContainerConfig, UrlParams } from './types';
+
+export const DEFAULT_URL: UrlParams = {
+  envId: 'staging-cea',
+  customOrigin: 'https://',
+  routeId: 'conversation',
+  conversationId: '',
+  phoneNumber: '',
+  textNumberId: '',
+  includeEnabled: true,
+  include: ['edit', 'optout'],
+  hideHeader: 'canonical',
+  hideMonetization: false,
+  inboxTextNumberId: '',
+  inboxBroadcastId: '',
+  inboxIsDone: false,
+  inboxAutoOptOut: false,
+  ssoKind: 'token',
+  ssoValue: '',
+  ssoDestinationHome: false,
+  ssoHideHeader: true,
+  customPath: '/contacts/group/everyone',
+  extraQuery: '',
+};
+
+export const SANDBOX_TOKENS = [
+  'allow-scripts',
+  'allow-same-origin',
+  'allow-forms',
+  'allow-popups',
+  'allow-popups-to-escape-sandbox',
+  'allow-modals',
+  'allow-downloads',
+  'allow-top-navigation-by-user-activation',
+  'allow-storage-access-by-user-activation',
+] as const;
+
+export const DEFAULT_CONTAINER: ContainerConfig = {
+  mode: 'drawer',
+  width: 912,
+  height: 800,
+  panelPct: 60,
+  drawerAnchor: 'right',
+  scrolling: 'no',
+  hostShell: true,
+  zoom: 1,
+  sandbox: false,
+  sandboxTokens: [
+    'allow-scripts',
+    'allow-same-origin',
+    'allow-forms',
+    'allow-popups',
+    'allow-modals',
+    'allow-downloads',
+  ],
+  allow: 'clipboard-write; microphone; camera',
+  referrerPolicy: 'strict-origin-when-cross-origin',
+  compareWidths: [640, 912, 1100, 1280],
+  showRulers: true,
+};
