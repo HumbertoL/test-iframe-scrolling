@@ -207,29 +207,10 @@ export default function TopBar({
 function Logo() {
   return (
     <Box
-      sx={{
-        width: 32,
-        height: 32,
-        borderRadius: 2,
-        position: 'relative',
-        background: 'linear-gradient(135deg, #6366f1 0%, #0ea5e9 100%)',
-        boxShadow: '0 6px 18px -6px rgba(99,102,241,.8)',
-        flexShrink: 0,
-      }}
-    >
-      <Box sx={{ position: 'absolute', inset: 7, border: '2px solid rgba(255,255,255,.9)', borderRadius: 1 }} />
-      <Box
-        sx={{
-          position: 'absolute',
-          left: 12,
-          top: 12,
-          right: 4,
-          bottom: 4,
-          borderRadius: 1,
-          bgcolor: 'rgba(255,255,255,.95)',
-          boxShadow: '0 2px 6px rgba(0,0,0,.25)',
-        }}
-      />
-    </Box>
+      component="img"
+      src="/favicon.svg"
+      alt=""
+      sx={{ width: 32, height: 32, flexShrink: 0, filter: 'drop-shadow(0 6px 12px rgba(99,102,241,.45))' }}
+    />
   );
 }
