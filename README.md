@@ -2,7 +2,7 @@
 
 A test bench for how the Text-Em-All web app (cea-desktop) behaves when partners embed it in iframes, drawers, modals and popups.
 
-Live: [tea-iframe-integration.netlify.app](https://tea-iframe-integration.netlify.app/)
+Live: a new Netlify site is being set up (the old `tea-iframe-integration.netlify.app` is retired).
 
 ## Run it
 

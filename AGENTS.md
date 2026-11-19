@@ -19,8 +19,10 @@ Yarn 1. Node ≥ 20.19 (`.nvmrc` says 24).
 
 ## Deploys
 
-- Pushing to `master` auto-deploys to https://tea-iframe-integration.netlify.app through Netlify's GitHub app. Build settings live in the Netlify dashboard.
-- There is no CI, no GitHub Action and no `netlify.toml`. Netlify does not post commit statuses.
+- The repo is `callemall/tea-embed-lab` (formerly `HumbertoL/test-iframe-scrolling`). `main` is the default branch.
+- A new Netlify site should deploy `main` with build command `yarn build`, publish folder `build`. Put its URL here and in `README.md` once it exists.
+- `master` is retired: a blank "Retired" page that keeps the old https://tea-iframe-integration.netlify.app site deploying something. Don't merge it into `main` or push app code to it.
+- There is no CI, no GitHub Action and no `netlify.toml`.
 - **The site is public.** Never add secrets, tokens, customer data, or security findings about TEA, such as the login `redirect` param that has no origin check. Partner names and internal file paths are already on it.
 
 ## Stack
