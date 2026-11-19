@@ -24,3 +24,9 @@ yarn-error.log*
 
 # vite
 /dist
+
+# Netlify Drop bundle
+/*.zip
+
+# Netlify CLI link state
+.netlify

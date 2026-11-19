@@ -18,6 +18,7 @@ HTTPS is required. Staging sends `Content-Security-Policy: frame-ancestors https
 ```bash
 yarn verify       # typecheck + tests
 yarn build        # → build/ (what Netlify publishes)
+yarn deploy       # build + deploy to Netlify production with your Netlify login
 ```
 
 ## What's in it

@@ -1,0 +1,61 @@
+# Typecheck, test and build every push and PR. Pushes to main (and manual runs)
+# also deploy build/ to Netlify, once the two repo secrets below exist:
+#
+#   NETLIFY_AUTH_TOKEN  Netlify → User settings → Applications → Personal access tokens
+#   NETLIFY_SITE_ID     Netlify → Site configuration → Site details → Site ID
+#
+# Until then the deploy step is skipped, so the workflow stays green.
+# This deploys with the Netlify CLI instead of Netlify's GitHub app, so it
+# doesn't need a callemall org owner to grant that app access to the repo.
+name: Build and deploy
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: deploy-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+      NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: .nvmrc
+          cache: yarn
+
+      - run: yarn install --frozen-lockfile
+
+      - name: Typecheck and test
+        run: yarn verify
+
+      - run: yarn build
+
+      - name: Deploy to Netlify
+        if: >-
+          (github.event_name == 'push' || github.event_name == 'workflow_dispatch') &&
+          github.ref == 'refs/heads/main' &&
+          env.NETLIFY_AUTH_TOKEN != '' && env.NETLIFY_SITE_ID != ''
+        run: >-
+          npx --yes netlify-cli@27.20.1 deploy
+          --prod
+          --no-build
+          --dir build
+          --site "$NETLIFY_SITE_ID"
+          --message "${{ github.sha }}"
+
+      - name: Explain skipped deploy
+        if: github.ref == 'refs/heads/main' && (env.NETLIFY_AUTH_TOKEN == '' || env.NETLIFY_SITE_ID == '')
+        run: echo "::notice::Netlify deploy skipped. Add NETLIFY_AUTH_TOKEN and NETLIFY_SITE_ID as repository secrets to turn it on."

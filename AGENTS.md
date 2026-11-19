@@ -12,6 +12,7 @@ Yarn 1. Node ≥ 20.19 (`.nvmrc` says 24).
 | `yarn start:http` | Same on http. Use it to frame a local cea-desktop (http://localhost:3000), or when a tool can't accept the self-signed cert |
 | `yarn verify` | `tsc` + `vitest run`. Run it before committing |
 | `yarn build` | Vite build into `build/` (Netlify publishes this folder) |
+| `yarn deploy` | Build, then push `build/` to Netlify production with the Netlify CLI (pinned). The first run asks you to log in and pick the site |
 
 - Don't name a script `check`: `yarn check` is a built-in Yarn 1 command and shadows it.
 - Dependencies are pinned to exact versions (`.yarnrc` has `save-exact true`). Keep them pinned and never add `^` or `~`.
@@ -20,9 +21,13 @@ Yarn 1. Node ≥ 20.19 (`.nvmrc` says 24).
 ## Deploys
 
 - The repo is `callemall/tea-embed-lab` (formerly `HumbertoL/test-iframe-scrolling`). `main` is the default branch.
-- A new Netlify site should deploy `main` with build command `yarn build`, publish folder `build`. Put its URL here and in `README.md` once it exists.
+- **Netlify does not watch this repo.** Its GitHub app needs a `callemall` org owner to grant access, so deploys go through the Netlify CLI instead:
+  - `.github/workflows/deploy.yml` runs `yarn verify` and `yarn build` on every push and PR. On pushes to `main` it also deploys to production, but only once the repo secrets `NETLIFY_AUTH_TOKEN` and `NETLIFY_SITE_ID` exist (adding them needs repo admin). Until then it skips the deploy and leaves a notice.
+  - `yarn deploy` does the same from a laptop with your own Netlify login.
+  - The site was first published by dragging a zip of `build/` into Netlify Drop. Zips are gitignored.
+  - Put the site URL here and in `README.md` once it exists.
 - `master` is retired: a blank "Retired" page that keeps the old https://tea-iframe-integration.netlify.app site deploying something. Don't merge it into `main` or push app code to it.
-- There is no CI, no GitHub Action and no `netlify.toml`.
+- Actions are pinned to commit SHAs (with the tag in a comment). Keep them pinned when you bump them.
 - **The site is public.** Never add secrets, tokens, customer data, or security findings about TEA, such as the login `redirect` param that has no origin check. Partner names and internal file paths are already on it.
 
 ## Stack
